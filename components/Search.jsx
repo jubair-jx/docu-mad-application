@@ -1,34 +1,41 @@
 "use client";
-
 import { useDebounce } from "@/hooks/useDebounce";
 import Image from "next/image";
+
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import SearchImg from "../public/search.svg";
+import SearchResult from "./SearchResult";
 const Search = ({ docs }) => {
   const [searchResult, setSearchResult] = useState([]);
   const [term, setTerm] = useState("");
-
+  const router = useRouter();
   const handleChange = (e) => {
-    e.preventDefault();
     const value = e.target.value;
     setTerm(value);
-    setSearchResult(value);
     doSearch(value);
   };
   const doSearch = useDebounce((term) => {
     const found = docs.filter((doc) => {
       return doc.title.toLowerCase().includes(term.toLowerCase());
     });
-    console.log(found);
+
     setSearchResult(found);
   }, 500);
+
+  const closeSearchResults = (e) => {
+    e.preventDefault();
+    router.push(e.target.href);
+    setTerm("");
+  };
+
   return (
     <>
       <div className=" lg:block lg:max-w-md lg:flex-auto ">
         {" "}
         <button
           type="button"
-          class="focus:[&amp;:not(:focus-visible)]:outline-none hidden h-8 w-full items-center gap-2 rounded-full bg-white pl-2 pr-3 text-sm text-zinc-500 ring-1 ring-zinc-900/10 transition hover:ring-zinc-900/20 dark:bg-white/5 dark:text-zinc-400 dark:ring-inset dark:ring-white/10 dark:hover:ring-white/20 lg:flex"
+          className="focus:[&amp;:not(:focus-visible)]:outline-none hidden h-8 w-full items-center gap-2 rounded-full bg-white pl-2 pr-3 text-sm text-zinc-500 ring-1 ring-zinc-900/10 transition hover:ring-zinc-900/20 dark:bg-white/5 dark:text-zinc-400 dark:ring-inset dark:ring-white/10 dark:hover:ring-white/20 lg:flex"
           aria-label="Find something..."
         >
           <Image
@@ -36,7 +43,7 @@ const Search = ({ docs }) => {
             alt="Search"
             width={50}
             height={50}
-            class="h-5 w-5"
+            className="h-5 w-5"
           />
           <input
             type="text"
@@ -47,6 +54,13 @@ const Search = ({ docs }) => {
           />
         </button>
       </div>
+      {term && term.trim().length > 0 && (
+        <SearchResult
+          results={searchResult}
+          term={term}
+          closeSearchResults={closeSearchResults}
+        />
+      )}
     </>
   );
 };
