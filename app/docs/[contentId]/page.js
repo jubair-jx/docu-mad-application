@@ -1,4 +1,4 @@
-import ContentDisplay from "@/app/components/ContentDisplay";
+import ContentDisplay from "@/components/ContentDisplay";
 
 const ContentPage = ({ params: { contentId } }) => {
   return <ContentDisplay id={contentId} />;
